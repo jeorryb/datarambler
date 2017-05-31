@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Notes from IoTfM 2016 - DataRambler</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/notes-from-iotfm-2016.html">
+
+        <meta name="author" content="Jeorry Balasabas" />
+        <meta name="keywords" content="Big Data,IoT,LoRa,Manufacturing" />
+        <meta name="description" content="A summary of the Internet of Things in Manufacturing event at GaTech 2016." />
+
+        <meta property="og:site_name" content="DataRambler" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Notes from IoTfM 2016"/>
+        <meta property="og:url" content="/notes-from-iotfm-2016.html"/>
+        <meta property="og:description" content="A summary of the Internet of Things in Manufacturing event at GaTech 2016."/>
+        <meta property="article:published_time" content="2016-11-09" />
+            <meta property="article:section" content="IoT" />
+            <meta property="article:tag" content="Big Data" />
+            <meta property="article:tag" content="IoT" />
+            <meta property="article:tag" content="LoRa" />
+            <meta property="article:tag" content="Manufacturing" />
+            <meta property="article:author" content="Jeorry Balasabas" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.simplex.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+        <link href="/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+DataRambler            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="/pages/about.html">
+                             About
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/notes-from-iotfm-2016.html"
+                       rel="bookmark"
+                       title="Permalink to Notes from IoTfM 2016">
+                        Notes from IoTfM&nbsp;2016
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2016-11-09T03:25:00-05:00"> Wed 09 November 2016</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/big-data.html">Big Data</a>
+        /
+	<a href="/tag/iot.html">IoT</a>
+        /
+	<a href="/tag/lora.html">LoRa</a>
+        /
+	<a href="/tag/manufacturing.html">Manufacturing</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Last Wednesday I had the pleasure of attending the IoT for Manufacturing
+Workshop at <span class="caps">GA</span> Tech. There were a lot of great speakers and a lot of the
+domain information was new to me since I haven&#8217;t spent too much time in
+the Manufacturing sector. I wanted to share some of my notes and
+overarching themes I noticed during the&nbsp;workshop.</p>
+<ul>
+<li>The IoT renaissance in manufacturing is a global phenomenon.&nbsp;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</li>
+</ul>
+<p>A lot of the speakers were talking about the efforts that individual
+countries were undertaking to position themselves as the global
+manufacturing hub of the future. Europe is championing &#8220;Industry 4.0&#8221;.
+China coined the term &#8220;Made in China 2025&#8221;. India is claiming &#8220;Make in
+India&#8221;. The <span class="caps">US</span> is pushing &#8220;Smart Manufacturing&#8221;. It seems that everyone
+is trying to get a piece of the estimated \$3.8 trillion up for grabs
+over the next ten years. The following infographic was in more than a
+few slide decks and you can grab a copy&nbsp;below.</p>
+<p><img alt="IoT Info" src="/images/IoT_info.jpg"></p>
+<ul>
+<li>Customers and Suppliers are pushing for architectural standards&nbsp;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</li>
+</ul>
+<p>The battle over protocols and standards in IoT reminds me of the format
+wars between <span class="caps">HD</span> <span class="caps">DVD</span> vs. BluRay or <span class="caps">CD</span> and LaserDisc. Everyone is trying
+to push their agenda in hopes of becoming the defacto standard. Only
+time will tell what standards the industry settles on. It was
+encouraging to see the <span class="caps">US</span> government attempting to provide some guidance
+with the
+<a href="https://www.congress.gov/bill/114th-congress/senate-bill/2607"><span class="caps">DIGIT</span></a>
+Act. For more reading in this space check out the <a href="http://www.iiconsortium.org/IISF.htm">Industrial Internet
+of Things Security Framework</a> and
+the <a href="http://www.iiconsortium.org/IIRA.htm">Industrial Internet Reference
+Architecture</a>.</p>
+<ul>
+<li>Big Data and Analytics will be a key component of any IoT initiative&nbsp;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</li>
+</ul>
+<p>Every presenter had their flavor of IoT initiatives and what they
+considered to be their competitive advantage. The one thing that every
+presenter agreed on was that the Data obtained from investing in IoT
+would provide the most value. A lot of companies admitted that they did
+not have the in house expertise when it came to Big Data and Data
+Analytics so they were using third parties for those services. At the
+same time, they were starting initiatives internally to beef up on those&nbsp;skills.</p>
+<ul>
+<li>Things of Note&nbsp;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</li>
+</ul>
+<p>I was hoping to get a little more in the weeds when it came to
+protocols. More specifically LoRa. It was interesting to hear that <span class="caps">AT</span>&amp;T
+is rolling out <span class="caps">LTE</span>-M as a direct competitor to LoRa. They claim low
+power consumption and and a sub \$10 cost for the sim cards. There was
+<span class="caps">GA</span> based company, CribMaster, that had some cool innovations in long
+range passive <span class="caps">RFID</span> technology. Think real-time tracking of passive rfid
+tags up to a 150ft. radius instead reading tags as they funnel through
+choke points. Siemens is rolling out a IoT &#8220;App Store&#8221; aimed at
+Manufacturing. I feel like everyone is trying to be the &#8220;Apple&#8221; of their
+sector and it&#8217;s starting to get a little redundant but I guess I can&#8217;t
+blame them. Manufacturing tends to trail other industries when it comes
+to emerging tech but they seem to be jumping on the IoT bandwagon which
+could have real impact for the industry in the next few&nbsp;years.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://github.com/jeorryb"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+    <li class="list-group-item"><a href="https://twitter.com/jeorryb"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/jeorry"><i class="fa fa-linkedin-square fa-lg"></i> linkedin</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Twitter Timeline -->
+<li class="list-group-item">
+  <h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4>
+  <div id="twitter_timeline">
+    <a class="twitter-timeline" data-width="250" data-height="300" data-dnt="true" data-theme="light" href="https://twitter.com/@jeorryb">Tweets by @jeorryb</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</li>
+<!-- End Sidebar/Twitter Timeline -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container-fluid">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Jeorry Balasabas
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <script src="/theme/js/bodypadding.js"></script>
+
+
+</body>
+</html>

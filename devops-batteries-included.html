@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>DevOps: Batteries Included - DataRambler</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/devops-batteries-included.html">
+
+        <meta name="author" content="Jeorry Balasabas" />
+        <meta name="keywords" content="ansible,automation,devops,Docker,netapp,Python" />
+        <meta name="description" content="Introduction to using Docker to wrap ansible modules and NetApp’s NMSDK to ‘toolify’ a dev environment." />
+
+        <meta property="og:site_name" content="DataRambler" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="DevOps: Batteries Included"/>
+        <meta property="og:url" content="/devops-batteries-included.html"/>
+        <meta property="og:description" content="Introduction to using Docker to wrap ansible modules and NetApp’s NMSDK to ‘toolify’ a dev environment."/>
+        <meta property="article:published_time" content="2017-02-24" />
+            <meta property="article:section" content="DevOps" />
+            <meta property="article:tag" content="ansible" />
+            <meta property="article:tag" content="automation" />
+            <meta property="article:tag" content="devops" />
+            <meta property="article:tag" content="Docker" />
+            <meta property="article:tag" content="netapp" />
+            <meta property="article:tag" content="Python" />
+            <meta property="article:author" content="Jeorry Balasabas" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.simplex.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+        <link href="/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+DataRambler            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="/pages/about.html">
+                             About
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/devops-batteries-included.html"
+                       rel="bookmark"
+                       title="Permalink to DevOps: Batteries Included">
+                        DevOps: Batteries&nbsp;Included
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-02-24T16:40:00-05:00"> Fri 24 February 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/ansible.html">ansible</a>
+        /
+	<a href="/tag/automation.html">automation</a>
+        /
+	<a href="/tag/devops.html">devops</a>
+        /
+	<a href="/tag/docker.html">Docker</a>
+        /
+	<a href="/tag/netapp.html">netapp</a>
+        /
+	<a href="/tag/python.html">Python</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>When I first started building Ansible modules I didn&#8217;t give any thought
+to what environments others would be using them in. In a perfect
+world you would have your config mgmt. and automation framework set up
+and running without any issues in 5 minutes. Now in certain
+environments (*<span class="caps">NIX</span>) that is true. But there are still others that are
+running environments on Windows (I can&#8217;t look at you) or <span class="caps">OSX</span> or whatever
+<span class="caps">OS</span> you happen to be running. In that case, consuming Ansible custom
+modules or playbooks plus certain python libraries (NetApp&#8217;s
+Manageability <span class="caps">SDK</span>) can be difficult, especially for beginners. When I
+realized how difficult it would be for some to take advantage of Ansible
+and all of its goodness I started searching for an easy&nbsp;button.</p>
+<h2>Docker to the&nbsp;rescue.</h2>
+<p><img alt="Docker Whale" src="/images/docker_whale.png"></p>
+<p>Instead of leaving beginners out in the cold, the only onus on you is to
+get docker installed and the Dockerfile provides the rest. I wasn&#8217;t able
+to cut out all the manual steps for certain reasons that I&#8217;ll explain
+below but I&#8217;ve simplified it as much as I can. Once you’ve built your
+Docker image, you’ll be able to run Ansible playbooks using custom
+modules in one&nbsp;line.</p>
+<p>I want to thank <a href="https://netapp.github.io/authors/andrew-sullivan">Andrew
+Sullivan</a> for his post
+on adding <span class="caps">NMSDK</span> to Docker and <a href="https://github.com/philm">Phil
+Misiowiec</a> for his ansible_playbook image
+from which I heavily&nbsp;borrowed.</p>
+<p>You can grab the Dockerfile to build an image
+<a href="https://github.com/jeorryb/netapp-ansible">here</a>. I decided not to
+package the <span class="caps">NMSDK</span> in my github repo for fear of licensing repercussions
+from NetApp. If you are a NetApp customer or partner then you have the
+ability to download the nmsdk for free. Since I’m assuming most
+consumers of this Dockerfile will be customers or partners then I don’t
+feel guilty for not providing it in the image&nbsp;itself.</p>
+<p>I also included the path to my github repo where the custom ansible
+modules are located. If you ever want the latest modules you&#8217;re only one
+docker build command away. The following is from the&nbsp;Dockerfile.</p>
+<div class="highlight"><pre><span></span><span class="nx">RUN</span> <span class="nx">git</span> <span class="nx">clone</span> <span class="nx">https</span><span class="p">:</span><span class="c1">//github.com/jeorryb/netapp-ansible.git /github</span>
+</pre></div>
+
+
+<p>Once you’ve downloaded the nmsdk place it in the same directory that
+your run your docker build command&nbsp;from.</p>
+<div class="highlight"><pre><span></span>docker build -t ansible-nmsdk .
+</pre></div>
+
+
+<h2>Adventures in certificate&nbsp;hell.</h2>
+<p><strong><span class="caps">SSL</span>:&nbsp;CERTIFICATE_VERIFY_FAILED</strong></p>
+<p>The other manual process that I included involves trusting the self
+signed cert from the cdot array that you are executing against. When I
+started building modules for cdot I made the decision to use https for
+connectivity to the array. At the time, I had no idea the rabbit hole
+that I was about to venture into. If you’ve ever made <span class="caps">SSL</span> calls from
+Python and received the exception above, you know what I’m talking&nbsp;about.</p>
+<blockquote>
+<p><strong>The &#8220;S&#8221; in &#8220;<span class="caps">HTTPS</span>&#8221; stands for&nbsp;secure.</strong></p>
+</blockquote>
+<p>Since I decided to use <span class="caps">SSL</span> for my <span class="caps">NMSDK</span> calls, I had to either apply
+certs signed from a trusted <span class="caps">CA</span> to my cluster or download the self signed
+certs that cdot creates when creating a cluster. I went with downloading
+the existing self signed cert and I’m guessing most will take that route
+as well. For a comprehensive explanation of Python and <span class="caps">SSL</span> checkout <a href="https://www.python.org/dev/peps/pep-0476/"><span class="caps">PEP</span>
+476</a>. The following is an
+example of running a Ansible playbook as a one liner with&nbsp;Docker.</p>
+<div class="highlight"><pre><span></span>docker run -it -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/etc/ssl/certs -v /Users/jeorryb/images/ansible_nmsdk:/ansible/playbooks ansible-nmsdk nmsdk.yaml
+</pre></div>
+
+
+<p>In the above command I’m mounting two volumes from my local host
+to the container. The first mount is my present working directory 
+where I’ve downloaded the cert from my cluster. Mounting the cert
+location on my host to the trusted certificate location on the container is a neat
+little trick to get the container to trust additional certs you have.
+The second mount is the directory where my playbook is located. You
+don’t have to specify \$(pwd) but I find it easier for one of the
+mounts. In the command above “ansible-nmsdk” is the name I gave to my
+Docker image and “nmsdk.yaml” is the ansible playbook I want to&nbsp;execute.</p>
+<p>Hopefully this makes it easier to play around with Ansible and NetApp
+and encourages you to include other “batteries” in your Docker&nbsp;images.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://github.com/jeorryb"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+    <li class="list-group-item"><a href="https://twitter.com/jeorryb"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/jeorry"><i class="fa fa-linkedin-square fa-lg"></i> linkedin</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Twitter Timeline -->
+<li class="list-group-item">
+  <h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4>
+  <div id="twitter_timeline">
+    <a class="twitter-timeline" data-width="250" data-height="300" data-dnt="true" data-theme="light" href="https://twitter.com/@jeorryb">Tweets by @jeorryb</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</li>
+<!-- End Sidebar/Twitter Timeline -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container-fluid">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Jeorry Balasabas
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <script src="/theme/js/bodypadding.js"></script>
+
+
+</body>
+</html>

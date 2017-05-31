@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Ansible + NetApp - DataRambler</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/ansible-netapp.html">
+
+        <meta name="author" content="Jeorry Balasabas" />
+        <meta name="keywords" content="ansible,automation,cm,devops,netapp" />
+        <meta name="description" content="The first in a series of articles demonstrating how to use Ansible to automate and configure NetApp cDOT arrays." />
+
+        <meta property="og:site_name" content="DataRambler" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Ansible + NetApp"/>
+        <meta property="og:url" content="/ansible-netapp.html"/>
+        <meta property="og:description" content="The first in a series of articles demonstrating how to use Ansible to automate and configure NetApp cDOT arrays."/>
+        <meta property="article:published_time" content="2016-09-29" />
+            <meta property="article:section" content="DevOps" />
+            <meta property="article:tag" content="ansible" />
+            <meta property="article:tag" content="automation" />
+            <meta property="article:tag" content="cm" />
+            <meta property="article:tag" content="devops" />
+            <meta property="article:tag" content="netapp" />
+            <meta property="article:author" content="Jeorry Balasabas" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.simplex.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+        <link href="/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+DataRambler            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="/pages/about.html">
+                             About
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/ansible-netapp.html"
+                       rel="bookmark"
+                       title="Permalink to Ansible + NetApp">
+                        Ansible +&nbsp;NetApp
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2016-09-29T19:44:00-04:00"> Thu 29 September 2016</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/ansible.html">ansible</a>
+        /
+	<a href="/tag/automation.html">automation</a>
+        /
+	<a href="/tag/cm.html">cm</a>
+        /
+	<a href="/tag/devops.html">devops</a>
+        /
+	<a href="/tag/netapp.html">netapp</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <blockquote>
+<p><strong>Improving daily work is even more important than doing daily&nbsp;work</strong></p>
+</blockquote>
+<p>If you&#8217;ve read the excellent book on DevOps, “The Phoenix Project”,
+you&#8217;ll recognize the above quote. If you haven’t read it then I suggest
+you do so <span class="caps">ASAP</span>. It’s an easy read and entertaining for anyone who&#8217;s
+worked in <span class="caps">IT</span>. For and introduction to DevOps and Configuration
+Management, you can&#8217;t do better. I thought it appropriate for this post
+on automating storage management tasks with Ansible and&nbsp;NetApp.</p>
+<p>Why did I choose Ansible? There are multiple automation and
+orchestration platforms out there that are highly capable. NetApp even
+has their own orchestration platform called <span class="caps">WFA</span>. If you&#8217;re interested in
+learning more about <span class="caps">WFA</span> I suggest starting with this excellent
+<a href="http://waflhouse.com/2016/02/26/an-introduction-to-workflow-development-in-netapp-oncommand-workflow-automation-part-1/">writeup</a>
+from <a href="https://twitter.com/@triggan">@triggan</a>. I wanted a platform that
+met the following&nbsp;requirements.</p>
+<ul>
+<li>Short learning&nbsp;curve</li>
+<li>Agentless</li>
+<li>Developer&nbsp;friendly</li>
+<li>Programmatic access to NetApp Clustered Data <span class="caps">ONTAP</span></li>
+</ul>
+<p>Ansible checked off all but one of those requirements. Ansible is
+agentless and communicates with hosts via <span class="caps">SSH</span>. Ansible is written in
+Python (which was a big plus) and it&#8217;s open source. There are hundreds
+of modules that come with Ansible that allow you to automate pretty much
+anything in your datacenter. After an exhausive search on Github and
+Google, I was disappointed to find out there were no NetApp <span class="caps">CDOT</span>&nbsp;modules.</p>
+<p>Python and NetApp&#8217;s Manageability <span class="caps">SDK</span> to the rescue. Since there weren&#8217;t
+any pre-built NetApp modules I decided to build my own. Because Python
+is a first class citizen in Ansible and NetApp provides a Python <span class="caps">API</span> I&#8217;m
+able to develop custom modules. Since I&#8217;ve done all the work on the
+backend you get to take advantage of these modules without knowing any
+Python. All you need is the ability to write Ansible playbooks to get
+started on automating NetApp <span class="caps">CDOT</span>&nbsp;storage.</p>
+<p>Playbooks are the building blocks of Ansible. A playbook is a <span class="caps">YAML</span> files
+made up of individual tasks (modules) that describe your goal. Below is
+a snippet of a playbook I created to configure a <span class="caps">CDOT</span>&nbsp;array.</p>
+<div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cDOT Configure</span>
+  <span class="l l-Scalar l-Scalar-Plain">connection</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">local</span>
+  <span class="l l-Scalar l-Scalar-Plain">gather_facts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+  <span class="l l-Scalar l-Scalar-Plain">vars</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span> <span class="s">&quot;admin&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">pwd</span><span class="p p-Indicator">:</span> <span class="s">&quot;badpass&quot;</span>  
+    <span class="l l-Scalar l-Scalar-Plain">array</span><span class="p p-Indicator">:</span> <span class="s">&quot;atlcdot&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">ansible_python_interpreter</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/Users/jeorryb/virtualenvs/ansible/bin/python</span>
+  <span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Rename Aggregate</span>
+     <span class="l l-Scalar l-Scalar-Plain">aggr_rename</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">array</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">pwd</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">aggr</span><span class="p p-Indicator">:</span> <span class="s">&quot;n1_aggr_root&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">new_aggr_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;n1_aggr_root_test&quot;</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Rename N2 Aggregate</span>
+     <span class="l l-Scalar l-Scalar-Plain">aggr_rename</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">array</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">pwd</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">aggr</span><span class="p p-Indicator">:</span> <span class="s">&quot;n2_aggr_root&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">new_aggr_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;n2_aggr_root_test&quot;</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Change date time</span>
+     <span class="l l-Scalar l-Scalar-Plain">date_time</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">array</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">pwd</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">timezone</span><span class="p p-Indicator">:</span> <span class="s">&quot;America/Chicago&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">date</span><span class="p p-Indicator">:</span> <span class="s">&quot;02/29/2016</span><span class="nv"> </span><span class="s">16:03:00&quot;</span>
+
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create NTP Server</span>
+     <span class="l l-Scalar l-Scalar-Plain">ntp_create</span><span class="p p-Indicator">:</span>
+       <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">array</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">pwd</span><span class="nv"> </span><span class="s">}}&quot;</span>
+       <span class="l l-Scalar l-Scalar-Plain">ntp_server</span><span class="p p-Indicator">:</span> <span class="s">&quot;ntp1.gatech.edu&quot;</span>
+<span class="nn">...</span>
+</pre></div>
+
+
+<p>As you can see, the playbook format is easy to read and understandable
+even to administrators that might not be that familiar with NetApp. This
+so called &#8220;Infrastructure As Code&#8221; style is another reason I chose
+Ansible. I&#8217;ll point out a couple of details. The &#8220;hosts:&#8221; variable is
+used to describe where you want your modules to be run. Since we can&#8217;t
+run Python natively on a NetApp <span class="caps">CDOT</span> array (at least not yet!) the
+playbook is run from localhost. The modules also assume that have added
+the location of the NetApp Manageability <span class="caps">SDK</span> to your <span class="caps">PATH</span> environment
+variable. You can also set other variables that can be reused for
+different tasks in the playbook under the &#8220;vars:&#8221; parameter. There are a
+ton of built-in variables that can be used with Ansible that I won&#8217;t go
+into here. Ansible
+<a href="https://docs.ansible.com/ansible/intro.html">documentation</a> is
+excellent and I suggest you read it for more information. Ansible also
+utilizes the Jinja2 templating engine which allows us to perform
+for-loops, ranges, etc. from within playbooks. I&#8217;ll be demonstrating
+some of these in future&nbsp;posts.</p>
+<p>All of the custom modules can be found
+<a href="https://github.com/jeorryb/netapp-ansible">here</a> on Github. If you
+clone the repository and run your playbook from that directory all the
+modules in the &#8220;library&#8221; folder will be available for use. Running a
+playbook is a simple as running the following&nbsp;command.</p>
+<div class="highlight"><pre><span></span>ansible-playbook netapp.yaml
+</pre></div>
+
+
+<p>The output displays if the tasks in your playbook completed successfully
+or why they&nbsp;failed.</p>
+<p><img alt="Playbook Result" src="/images/playbook_screenshot.jpg"></p>
+<p>Ansible strives to be idempotent. That&#8217;s a fancy word for making changes
+only when they are needed. The majority of NetApp commands are
+idempotent by default but I&#8217;m still working to make sure the modules are
+truly idempotent when it makes sense. I&#8217;m currently in the process of
+getting these modules added to Ansible&#8217;s official extra&#8217;s repository in
+which case you will no longer need to use a custom modules&nbsp;folder.</p>
+<p>If you&#8217;re interested in developing custom modules yourself I highly
+recommend the resources below. They were instrumental while I was
+creating my&nbsp;own.</p>
+<ul>
+<li><a href="https://docs.ansible.com/ansible/developing_modules.html">Ansible - Developing&nbsp;Modules</a></li>
+<li><a href="https://github.com/jimi-c/hue">James Cammarata - Phillips Hue Light&nbsp;Modules</a></li>
+<li><a href="http://jedelman.com/home/ansible-for-networking/">Jason Edelman&#8217;s Ansible for&nbsp;Networking</a></li>
+</ul>
+<p>I hope this encourages you to give Ansible a try. We should all be
+striving to improve our daily work through the use of&nbsp;automation.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://github.com/jeorryb"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+    <li class="list-group-item"><a href="https://twitter.com/jeorryb"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/jeorry"><i class="fa fa-linkedin-square fa-lg"></i> linkedin</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Twitter Timeline -->
+<li class="list-group-item">
+  <h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4>
+  <div id="twitter_timeline">
+    <a class="twitter-timeline" data-width="250" data-height="300" data-dnt="true" data-theme="light" href="https://twitter.com/@jeorryb">Tweets by @jeorryb</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</li>
+<!-- End Sidebar/Twitter Timeline -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container-fluid">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Jeorry Balasabas
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <script src="/theme/js/bodypadding.js"></script>
+
+
+</body>
+</html>
