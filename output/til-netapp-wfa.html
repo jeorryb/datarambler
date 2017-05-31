@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>TIL: NetApp WFA - DataRambler</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/til-netapp-wfa.html">
+
+        <meta name="author" content="Jeorry Balasabas" />
+        <meta name="keywords" content="automation,netapp,Powershell,WFA" />
+        <meta name="description" content="Lately, I’ve taken a break from my Ansible work to concentrate on WorkFlow Automation by NetApp. I know, I know, why am I working with yet another automation project. I’ve discussed previously here and here how Ansible fits into provisioning and managing NetApp storage; however, there are times …" />
+
+        <meta property="og:site_name" content="DataRambler" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="TIL: NetApp WFA"/>
+        <meta property="og:url" content="/til-netapp-wfa.html"/>
+        <meta property="og:description" content="Lately, I’ve taken a break from my Ansible work to concentrate on WorkFlow Automation by NetApp. I know, I know, why am I working with yet another automation project. I’ve discussed previously here and here how Ansible fits into provisioning and managing NetApp storage; however, there are times …"/>
+        <meta property="article:published_time" content="2017-02-22" />
+            <meta property="article:section" content="NetApp" />
+            <meta property="article:tag" content="automation" />
+            <meta property="article:tag" content="netapp" />
+            <meta property="article:tag" content="Powershell" />
+            <meta property="article:tag" content="WFA" />
+            <meta property="article:author" content="Jeorry Balasabas" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.simplex.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+        <link href="/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+DataRambler            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="/pages/about.html">
+                             About
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/til-netapp-wfa.html"
+                       rel="bookmark"
+                       title="Permalink to TIL: NetApp WFA">
+                        <span class="caps">TIL</span>: NetApp <span class="caps">WFA</span>
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-02-22T18:47:00-05:00"> Wed 22 February 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/automation.html">automation</a>
+        /
+	<a href="/tag/netapp.html">netapp</a>
+        /
+	<a href="/tag/powershell.html">Powershell</a>
+        /
+	<a href="/tag/wfa.html">WFA</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Lately, I&#8217;ve taken a break from my Ansible work to concentrate on
+WorkFlow Automation by NetApp. I know, I know, why am I working with yet
+another automation project. I&#8217;ve discussed previously
+<a href="http://www.datarambler.com/ansible-netapp/">here</a> and
+<a href="http://www.datarambler.com/ansible-netapp-part-deux/">here</a> how Ansible
+fits into provisioning and managing NetApp storage; however, there are
+times when <span class="caps">WFA</span> is the appropriate tool. This isn&#8217;t an introduction to
+<span class="caps">WFA</span>. If that&#8217;s what you&#8217;re looking for then I suggest you start with
+this excellent
+<a href="http://waflhouse.com/2016/02/26/an-introduction-to-workflow-development-in-netapp-oncommand-workflow-automation-part-1/">post</a>
+from @triggan. This is meant to provide some tips on writing workflows
+and some gotchas that I&#8217;ve run across while working with <span class="caps">WFA</span>.</p>
+<p><img alt="automation" src="/images/neo_automation.jpg"></p>
+<p>One of the benefits of using <span class="caps">WFA</span> is its integration with Powershell.
+This should be very comforting to those Microsoft fanboys out there.
+That being said, there are some sticking points I want to bring to
+light. First let&#8217;s provide some context. I recently had a customer who
+wanted to migrate some very intricate shell scripts into <span class="caps">WFA</span>. They
+previously had all their arrays hard coded into the scripts. This is a
+quick and dirty fix that we&#8217;ve all done but if there is a programmatic
+way to pull that information from a live data source then we&#8217;re
+appeasing the design pattern gods. Enter the <span class="caps">WFA</span> database. <span class="caps">WFA</span> becomes
+your current source of record because it periodically pulls data from
+OnCommand Unified Manager which you should be using to monitor your
+NetApp environment. Shame on you if you&#8217;re not. Instead of hard coding
+array names into your script, you are only a <span class="caps">SQL</span> query away from all
+current clusters in your environment. Below is an example query with the&nbsp;results.</p>
+<p><img alt="automation" src="/images/sql_cluster_query.jpg"></p>
+<p>Excellent, I have a way to programmatically pull all clusters in my
+environment and I can perform some sort of task against them. In my
+case, I only needed the cluster names so I changed my query to the&nbsp;following.</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">cluster</span><span class="p">.</span><span class="n">name</span> <span class="k">FROM</span> <span class="n">cm_storage</span><span class="p">.</span><span class="n">cluster</span>
+</pre></div>
+
+
+<p>Now that I have a list of my clusters I should be able to send that to
+my next cmdlet via the Powershell pipeline,&nbsp;right?</p>
+<h3>Wrong</h3>
+<p>Another benefit of using <span class="caps">WFA</span> for your NetApp environment is that it
+natively provides a repository for credentials. Instead of hard coding
+usernames and passwords into your scripts, you can utilize
+the <strong>Connect-WfaCluster </strong>cmdlet and <span class="caps">WFA</span> will connect using the
+internal credential store. So how come the following is falling&nbsp;over?</p>
+<div class="highlight"><pre><span></span><span class="nv">$clusters</span> <span class="p">=</span> <span class="p">@(</span><span class="nb">Invoke-MySqlQuery</span> <span class="n">-Query</span> <span class="s2">&quot;SELECT cluster.name FROM cm_storage.cluster&quot;</span><span class="p">)</span>
+<span class="nv">$clusters</span> <span class="p">|</span> <span class="nb">Connect-WfaCluster</span>
+</pre></div>
+
+
+<p>After taking a peek at the full help for the
+<strong>Connect-WfaCluster </strong>cmdlet I discover that the &#8220;-Node&#8221; parameter
+doesn&#8217;t accept pipeline input. Ok, if it doesn&#8217;t take pipeline input
+then I&#8217;ll use a for-loop to iterate through my clusters. That will
+definitely&nbsp;work.</p>
+<h3>Wrong&nbsp;again</h3>
+<div class="highlight"><pre><span></span><span class="k">ForEach</span><span class="n">-Object</span> <span class="p">(</span><span class="nv">$clust</span> <span class="k">in</span> <span class="nv">$clusters</span><span class="p">)</span> <span class="p">{</span>
+<span class="nb">Connect-WfaCluster</span> <span class="nv">$clust</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>After banging my head a few times and some google-fu, I came across an
+<a href="https://blogs.technet.microsoft.com/heyscriptingguy/2014/07/08/getting-to-know-foreach-and-foreach-object/">article</a>
+that explains the difference between <strong>ForEach-Object </strong>and <strong>ForEach</strong>.
+If you&#8217;re too lazy to read the article the gist of it is that
+ForEach-Object utilizes the pipeline while the ForEach statement loads
+the array into memory and processes it from there. That pretty much
+forces my hand. I ended up using the following to successfully connect
+to all my clusters and execute workflows against&nbsp;them.</p>
+<div class="highlight"><pre><span></span><span class="nv">$clusters</span> <span class="p">=</span> <span class="p">@(</span><span class="nb">Invoke-MySqlQuery</span> <span class="n">-Query</span> <span class="s2">&quot;SELECT cluster.name FROM cm_storage.cluster&quot;</span><span class="p">)</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$clust</span> <span class="k">in</span> <span class="nv">$clusters</span><span class="p">.</span><span class="n">name</span><span class="p">)</span> <span class="p">{</span>
+<span class="nb">Connect-WfaCluster</span> <span class="nv">$clust</span>
+<span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<blockquote>
+<p><strong>Dance with the girl that brung&nbsp;ya.</strong></p>
+</blockquote>
+<p>I don&#8217;t know if I would have run into this problem had I chosen to
+implement the <span class="caps">WFA</span> script in <span class="caps">PERL</span>. I&#8217;m guessing not but I&#8217;m open to
+suggestions from any of you <span class="caps">PERL</span> gurus out there. I thought I had a
+pretty firm grasp on Powershell before I started this adventure but I&#8217;m
+starting to find out just how much I don&#8217;t know the more I proceed. Such
+is&nbsp;life.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://github.com/jeorryb"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+    <li class="list-group-item"><a href="https://twitter.com/jeorryb"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/jeorry"><i class="fa fa-linkedin-square fa-lg"></i> linkedin</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Twitter Timeline -->
+<li class="list-group-item">
+  <h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4>
+  <div id="twitter_timeline">
+    <a class="twitter-timeline" data-width="250" data-height="300" data-dnt="true" data-theme="light" href="https://twitter.com/@jeorryb">Tweets by @jeorryb</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</li>
+<!-- End Sidebar/Twitter Timeline -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container-fluid">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Jeorry Balasabas
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <script src="/theme/js/bodypadding.js"></script>
+
+
+</body>
+</html>

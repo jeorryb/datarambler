@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Ansible + NetApp: Part Deux - DataRambler</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/ansible-netapp-part-deux.html">
+
+        <meta name="author" content="Jeorry Balasabas" />
+        <meta name="keywords" content="ansible,automation,cm,devops,netapp" />
+        <meta name="description" content="The second part to a series on using Ansible with NetApp cDOT arrays." />
+
+        <meta property="og:site_name" content="DataRambler" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Ansible + NetApp: Part Deux"/>
+        <meta property="og:url" content="/ansible-netapp-part-deux.html"/>
+        <meta property="og:description" content="The second part to a series on using Ansible with NetApp cDOT arrays."/>
+        <meta property="article:published_time" content="2016-11-01" />
+            <meta property="article:section" content="DevOps" />
+            <meta property="article:tag" content="ansible" />
+            <meta property="article:tag" content="automation" />
+            <meta property="article:tag" content="cm" />
+            <meta property="article:tag" content="devops" />
+            <meta property="article:tag" content="netapp" />
+            <meta property="article:author" content="Jeorry Balasabas" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.simplex.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+        <link href="/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+DataRambler            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="/pages/about.html">
+                             About
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/ansible-netapp-part-deux.html"
+                       rel="bookmark"
+                       title="Permalink to Ansible + NetApp: Part Deux">
+                        Ansible + NetApp: Part&nbsp;Deux
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2016-11-01T19:39:00-04:00"> Tue 01 November 2016</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/ansible.html">ansible</a>
+        /
+	<a href="/tag/automation.html">automation</a>
+        /
+	<a href="/tag/cm.html">cm</a>
+        /
+	<a href="/tag/devops.html">devops</a>
+        /
+	<a href="/tag/netapp.html">netapp</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>I promised to dig a little deeper into what you can do with Ansible and
+NetApp in my last post. In the spirit of 30 blog posts in 30 days I
+decided to cheat a little on the first post by counting this as #1.
+Without further ado let&#8217;s jump right in to the good&nbsp;stuff.</p>
+<p>How many times have you had to create multiple volumes, LIFs, etc. and
+you pop open Excel to create a concatenate formula and copy and paste
+into your terminal emulator of choice? Ansible allows you to accomplish
+this using the built in &#8220;with_items:&#8221; statement. Consider the following
+task of creating several&nbsp;LIFs.</p>
+<div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create lif 1 for nfs</span>
+    <span class="l l-Scalar l-Scalar-Plain">int_create</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.0.1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;admin&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;Password1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="s">&quot;svm_nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">lif</span><span class="p p-Indicator">:</span> <span class="s">&quot;lif_nfs_01&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">role</span><span class="p p-Indicator">:</span> <span class="s">&quot;data&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">data_proto</span><span class="p p-Indicator">:</span> <span class="s">&quot;nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">node</span><span class="p p-Indicator">:</span> <span class="s">&quot;atlcdot-01&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span> <span class="s">&quot;e0d&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">ip</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.1.178&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">netmask</span><span class="p p-Indicator">:</span> <span class="s">&quot;255.255.255.0&quot;</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create lif 2 for nfs</span>
+    <span class="l l-Scalar l-Scalar-Plain">int_create</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.0.1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;admin&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;Password1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="s">&quot;svm_nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">lif</span><span class="p p-Indicator">:</span> <span class="s">&quot;lif_nfs_02&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">role</span><span class="p p-Indicator">:</span> <span class="s">&quot;data&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">data_proto</span><span class="p p-Indicator">:</span> <span class="s">&quot;nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">node</span><span class="p p-Indicator">:</span> <span class="s">&quot;atlcdot-01&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span> <span class="s">&quot;e0d&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">ip</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.1.179&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">netmask</span><span class="p p-Indicator">:</span> <span class="s">&quot;255.255.255.0&quot;</span>
+<span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create lif 3 for nfs</span>
+    <span class="l l-Scalar l-Scalar-Plain">int_create</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.0.1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;admin&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;Password1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="s">&quot;svm_nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">lif</span><span class="p p-Indicator">:</span> <span class="s">&quot;lif_nfs_03&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">role</span><span class="p p-Indicator">:</span> <span class="s">&quot;data&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">data_proto</span><span class="p p-Indicator">:</span> <span class="s">&quot;nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">node</span><span class="p p-Indicator">:</span> <span class="s">&quot;atlcdot-01&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span> <span class="s">&quot;e0d&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">ip</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.1.180&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">netmask</span><span class="p p-Indicator">:</span> <span class="s">&quot;255.255.255.0&quot;</span>
+</pre></div>
+
+
+<p>Now the same tasks using&nbsp;&#8220;with_items:&#8221;</p>
+<div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create lif for nfs</span>
+    <span class="l l-Scalar l-Scalar-Plain">int_create</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.0.1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;admin&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;Password1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="s">&quot;svm_nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">lif</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.name</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">role</span><span class="p p-Indicator">:</span> <span class="s">&quot;data&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">data_proto</span><span class="p p-Indicator">:</span> <span class="s">&quot;nfs&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">node</span><span class="p p-Indicator">:</span> <span class="s">&quot;atlcdot-01&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span> <span class="s">&quot;e0d&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">ip</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.ip</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">netmask</span><span class="p p-Indicator">:</span> <span class="s">&quot;255.255.255.0&quot;</span>
+  <span class=" -Error">  </span><span class="l l-Scalar l-Scalar-Plain">with_items</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span> <span class="nv">name</span><span class="p p-Indicator">:</span> <span class="s">&#39;lif_nfs_01&#39;</span><span class="p p-Indicator">,</span> <span class="nv">ip</span><span class="p p-Indicator">:</span> <span class="s">&#39;192.168.0.178&#39;</span> <span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span> <span class="nv">name</span><span class="p p-Indicator">:</span> <span class="s">&#39;lif_nfs_02&#39;</span><span class="p p-Indicator">,</span> <span class="nv">ip</span><span class="p p-Indicator">:</span> <span class="s">&#39;192.168.0.179&#39;</span> <span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span> <span class="nv">name</span><span class="p p-Indicator">:</span> <span class="s">&#39;lif_nfs_03&#39;</span><span class="p p-Indicator">,</span> <span class="nv">ip</span><span class="p p-Indicator">:</span> <span class="s">&#39;192.168.0.180&#39;</span> <span class="p p-Indicator">}</span>
+</pre></div>
+
+
+<p>As you can see, the task is cleaner and shorter. Now what if we had a
+dictionary of <span class="caps">LIF</span> names and their respective home nodes, home ports,
+vservers and ip addresses that we wanted to loop over in our playbook.
+That would be accomplished using the &#8220;with_dict:&#8221; statement. Say we had
+our dictionary in the following variable&nbsp;file.</p>
+<div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">lifs</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">lif_cifs_01</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">svm_cifs</span>
+    <span class="l l-Scalar l-Scalar-Plain">proto</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cifs</span>
+    <span class="l l-Scalar l-Scalar-Plain">home_node</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">node1</span>
+    <span class="l l-Scalar l-Scalar-Plain">home_port</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">e0c</span>
+    <span class="l l-Scalar l-Scalar-Plain">ipaddr</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">192.168.0.210</span>
+  <span class="l l-Scalar l-Scalar-Plain">lif_nfs_01</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">svm_nfs</span>
+    <span class="l l-Scalar l-Scalar-Plain">proto</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">nfs</span>
+    <span class="l l-Scalar l-Scalar-Plain">home_node</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">node2</span>
+    <span class="l l-Scalar l-Scalar-Plain">home_port</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">e0d</span>
+    <span class="l l-Scalar l-Scalar-Plain">ipaddr</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">10.0.0.100</span>
+</pre></div>
+
+
+<p>We could loop through this dictionary using &#8220;with_dict:&#8221; in our
+playbook as&nbsp;follows:</p>
+<div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Create lifs</span>
+    <span class="l l-Scalar l-Scalar-Plain">int_create</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">cluster</span><span class="p p-Indicator">:</span> <span class="s">&quot;192.168.0.1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">user_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;admin&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="s">&quot;Password1&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">vserver</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.value.vserver</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">lif</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.key</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">role</span><span class="p p-Indicator">:</span> <span class="s">&quot;data&quot;</span>
+      <span class="l l-Scalar l-Scalar-Plain">data_proto</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.value.proto</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">node</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.value.home_node</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.value.home_port</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">ip</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{{</span> <span class="nv">item.value.ipaddr</span> <span class="p p-Indicator">}}</span>
+      <span class="l l-Scalar l-Scalar-Plain">netmask</span><span class="p p-Indicator">:</span> <span class="s">&quot;255.255.255.0&quot;</span>
+  <span class=" -Error">  </span><span class="l l-Scalar l-Scalar-Plain">with_dict</span><span class="p p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">lifs</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</pre></div>
+
+
+<p>Hopefully these tips can save you some time with your own playbooks. For
+more information about loops in Ansible I recommend the
+Ansible <a href="https://docs.ansible.com/ansible/playbooks_loops.html#">documentation</a>.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://github.com/jeorryb"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+    <li class="list-group-item"><a href="https://twitter.com/jeorryb"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/jeorry"><i class="fa fa-linkedin-square fa-lg"></i> linkedin</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Twitter Timeline -->
+<li class="list-group-item">
+  <h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4>
+  <div id="twitter_timeline">
+    <a class="twitter-timeline" data-width="250" data-height="300" data-dnt="true" data-theme="light" href="https://twitter.com/@jeorryb">Tweets by @jeorryb</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</li>
+<!-- End Sidebar/Twitter Timeline -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container-fluid">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Jeorry Balasabas
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+    <script src="/theme/js/bodypadding.js"></script>
+
+
+</body>
+</html>
