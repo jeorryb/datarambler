@@ -29,6 +29,9 @@ I decided to use Github Pages because I'd eventually like to use some sort of au
 
 +-- content  
 |+---- extra  
-|+---------.nojekyll
+|+---------.nojekyll  
+
+
+
  
 
