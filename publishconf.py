@@ -28,7 +28,7 @@ BANNER = 'images/graph_banner.jpg'
 TWITTER_USERNAME = '@jeorryb'
 TWITTER_WIDGET_ID = 'jeorryb'
 MARKUP = ('md', 'ipynb')
-ADDTHIS_PROFILE = 'jeorry'
+ADDTHIS_PROFILE = 'ra-59322469c36b0975'
 
 
 TIMEZONE = 'America/New_York'
