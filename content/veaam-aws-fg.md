@@ -70,7 +70,7 @@ When provisioning the gateway it asks for the S3 bucket where you want to store 
 
 Once you've created the file share, AWS is kind enough to provide you with the exact command to mount the share on your OS.
 
-![Mount Options]({filename}/images/aws_fg_mount_options.png)
+![Mount Options]({filename}/images/fg_mount_options.png)
 
 ## Veeam Setup and Provisioning
 
