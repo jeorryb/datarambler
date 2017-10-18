@@ -29,6 +29,9 @@ TWITTER_USERNAME = '@jeorryb'
 TWITTER_WIDGET_ID = 'jeorryb'
 MARKUP = ('md', 'ipynb')
 ADDTHIS_PROFILE = 'ra-59322469c36b0975'
+IPYNB_USE_META_SUMMARY = True
+IGNORE_FILES = ['.ipynb_checkpoints']
+IPYNB_IGNORE_CSS = True
 
 
 TIMEZONE = 'America/New_York'
